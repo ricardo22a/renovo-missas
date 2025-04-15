@@ -16,10 +16,11 @@ app.get('/api/missas', async (req, res) => {
   const url = `https://www.horariodemissa.com.br/search.php?uf=${estado}&cidade=${cidadeEncoded}&opcoes=cidade_opcoes&submit=15049935`;
 
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+});
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'domcontentloaded' });
 
