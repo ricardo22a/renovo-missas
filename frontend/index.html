@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Missas Hoje</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .resultado {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      margin-top: 30px;
+    }
+    .igreja {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Buscar Missas em sua Cidade</h1>
+
+  <div class="form-group">
+    <label for="estado">Estado</label>
+    <select id="estado">
+      <option value="">Selecione...</option>
+      <option value="SP">SP</option>
+      <option value="RJ">RJ</option>
+      <option value="MG">MG</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="cidade">Cidade</label>
+    <input type="text" id="cidade" placeholder="Digite sua cidade" />
+  </div>
+
+  <button onclick="buscarMissas()">🔍 Ver Missas</button>
+
+  <div id="resultado" class="resultado" style="display: none;">
+    <h2>Missas Encontradas</h2>
+    <div id="missas"></div>
+  </div>
+
+  <script>
+    async function buscarMissas() {
+      const estado = document.getElementById('estado').value;
+      const cidade = document.getElementById('cidade').value;
+
+      if (!estado || !cidade) {
+        alert('Preencha estado e cidade.');
+        return;
+      }
+
+      const res = await fetch(`http://localhost:3000/api/missas?estado=${estado}&cidade=${encodeURIComponent(cidade)}`);
+      const data = await res.json();
+
+      const missasDiv = document.getElementById('missas');
+      missasDiv.innerHTML = '';
+
+      if (!data.missas || data.missas.length === 0) {
+        missasDiv.innerHTML = '<p>Nenhuma missa encontrada.</p>';
+      } else {
+        data.missas.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'igreja';
+          div.innerHTML = `<strong>${m.igreja}</strong><br>${m.horarios.join('<br>')}`;
+          missasDiv.appendChild(div);
+        });
+      }
+
+      document.getElementById('resultado').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
